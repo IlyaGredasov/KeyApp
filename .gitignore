@@ -1,4 +1,4 @@
 src/draft.txt
 .venv
 rebuild.bat
-*/__pycache__
+__pycache__/
