@@ -1,0 +1,4 @@
+src/draft.txt
+.venv
+rebuild.bat
+__pycache__/
