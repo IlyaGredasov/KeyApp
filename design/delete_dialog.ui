@@ -48,7 +48,7 @@ QLabel {
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QLabel" name="label">
+     <widget class="QLabel" name="sureLabel">
       <property name="text">
        <string>Are you sure
 you want to delete password?</string>
@@ -59,7 +59,7 @@ you want to delete password?</string>
      </widget>
     </item>
     <item>
-     <widget class="QLabel" name="label_2">
+     <widget class="QLabel" name="adminLabel">
       <property name="text">
        <string>Admin Password:</string>
       </property>
@@ -69,7 +69,7 @@ you want to delete password?</string>
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="lineEdit"/>
+     <widget class="QLineEdit" name="passwordLineEdit"/>
     </item>
     <item>
      <widget class="QDialogButtonBox" name="buttonBox">
@@ -85,7 +85,7 @@ you want to delete password?</string>
      </widget>
     </item>
     <item>
-     <widget class="QLabel" name="label_3">
+     <widget class="QLabel" name="errorLabel">
       <property name="text">
        <string/>
       </property>

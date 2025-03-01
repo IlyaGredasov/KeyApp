@@ -126,8 +126,12 @@ class Ui_MainWindow(object):
         self.toolsBarFrame.setFrameShape(QtWidgets.QFrame.Box)
         self.toolsBarFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.toolsBarFrame.setObjectName("toolsBarFrame")
-        self.toolsBarFrame.setParent(self.centralStackedWidget)
+        self.toolsBarFrame.setParent(self.centralWidget)
         self.toolsBarFrame.lower()
+
+        MainWindow.resize(1920, 1080)
+        MainWindow.setWindowFlags(MainWindow.windowFlags() & ~QtCore.Qt.WindowType.WindowMaximizeButtonHint)
+
         self.toolsLabel = QtWidgets.QLabel(self.toolsBarFrame)
         self.toolsLabel.setGeometry(QtCore.QRect(0, 0, 421, 101))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Fixed)
@@ -253,13 +257,13 @@ class Ui_MainWindow(object):
         self.domainLineEdit = QtWidgets.QLineEdit(self.verticalLayoutWidget_3)
         self.domainLineEdit.setObjectName("domainLineEdit")
         self.keyActionVerticalLayout.addWidget(self.domainLineEdit)
-        self.loginLabel = QtWidgets.QLabel(self.verticalLayoutWidget_3)
-        self.loginLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.loginLabel.setObjectName("loginLabel")
-        self.keyActionVerticalLayout.addWidget(self.loginLabel)
-        self.loginLineEdit = QtWidgets.QLineEdit(self.verticalLayoutWidget_3)
-        self.loginLineEdit.setObjectName("loginLineEdit")
-        self.keyActionVerticalLayout.addWidget(self.loginLineEdit)
+        self.usernameLabel = QtWidgets.QLabel(self.verticalLayoutWidget_3)
+        self.usernameLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.usernameLabel.setObjectName("usernameLabel")
+        self.keyActionVerticalLayout.addWidget(self.usernameLabel)
+        self.usernameLineEdit = QtWidgets.QLineEdit(self.verticalLayoutWidget_3)
+        self.usernameLineEdit.setObjectName("usernameLineEdit")
+        self.keyActionVerticalLayout.addWidget(self.usernameLineEdit)
         self.passwordLabel = QtWidgets.QLabel(self.verticalLayoutWidget_3)
         self.passwordLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.passwordLabel.setObjectName("passwordLabel")
@@ -267,9 +271,9 @@ class Ui_MainWindow(object):
         self.passwordLineEdit = QtWidgets.QLineEdit(self.verticalLayoutWidget_3)
         self.passwordLineEdit.setObjectName("passwordLineEdit")
         self.keyActionVerticalLayout.addWidget(self.passwordLineEdit)
-        self.checkBox = QtWidgets.QCheckBox(self.verticalLayoutWidget_3)
-        self.checkBox.setObjectName("checkBox")
-        self.keyActionVerticalLayout.addWidget(self.checkBox)
+        self.requiredAdminRightsCheckBox = QtWidgets.QCheckBox(self.verticalLayoutWidget_3)
+        self.requiredAdminRightsCheckBox.setObjectName("requiredAdminRightsCheckBox")
+        self.keyActionVerticalLayout.addWidget(self.requiredAdminRightsCheckBox)
         self.submitButton = QtWidgets.QPushButton(self.verticalLayoutWidget_3)
         self.submitButton.setObjectName("submitButton")
         self.keyActionVerticalLayout.addWidget(self.submitButton)
@@ -291,44 +295,95 @@ class Ui_MainWindow(object):
         """
 
         from password_query import Ui_passwordQueryWidget
-        from mock_db_api import PasswordQuery, check_admin_preferences, refresh_master_key, get_all, get_correct, \
+        from delete_dialog import Ui_deletePasswordDialog
+        from mock_db_api import PasswordQuery, admin_password, refresh_master_key, get_all, get_correct, \
             add_data, delete_data, key_change, fuzzy_search
         from typing import List
-        self.chosenPasswordWidget: QtWidgets.QWidget
+        self.deleteDialog = QtWidgets.QDialog()
+        self.chosenPasswordWidget: QtWidgets.QWidget | None = None
+
+        def deletePasswordQuery():
+            self.chosenPasswordWidget.deleteLater()
+            self.passwordsGridLayout.removeWidget(self.chosenPasswordWidget)
+            delete_data(self.chosenPasswordWidget.findChild(QtWidgets.QLineEdit, "domainLineEdit").text())
+            self.chosenPasswordWidget = None
+            updatePasswordWidgetsList(get_all())
 
         def approveDeletion():
-            pass
+            if self.chosenPasswordWidget.findChild(QtWidgets.QLabel, "adminLabel").text() != "":
+                if self.deleteDialog.findChild(QtWidgets.QLineEdit, "passwordLineEdit").text() == admin_password:
+                    deletePasswordQuery()
+                    self.deleteDialog.accept()
+                else:
+                    self.deleteDialog.findChild(QtWidgets.QLabel, "errorLabel").setText("Wrong password")
+            else:
+                deletePasswordQuery()
+                self.deleteDialog.accept()
 
-        def declineDeletion():
-            pass
-
-        def showPasswordInPasswordWidget():
-            pass
-
-        def editPasswordWidget():
-            pass
-
-        def deletePasswordWidget():
-            pass
-
-        def updatePasswordQuery():
-            pass
+        def addPasswordQuery():
+            self.chosenPasswordWidget = None
+            self.domainLineEdit.setText("")
+            self.usernameLineEdit.setText("")
+            self.passwordLineEdit.setText("")
+            editPasswordWidget(None)
 
         def updateMasterKeyResponse():
             refresh_master_key()
             self.responseLabel.setText("Master key has been refreshed")
 
         def submitPasswordChanges():
-            self.chosenPasswordWidget.findChild(QtWidgets.QLineEdit, "domainLineEdit").setText(
-                self.domainLineEdit.text())
-            self.chosenPasswordWidget.findChild(QtWidgets.QLineEdit, "usernameLineEdit").setText(
-                self.usernameLineEdit.text())
-            self.chosenPasswordWidget.findChild(QtWidgets.QLineEdit, "passwordLineEdit").setText(
-                self.passwordLineEdit.text())
-            self.errorLabel.setText("Data has been saved")
+            domain = self.domainLineEdit.text()
+            username = self.usernameLineEdit.text()
+            password = self.passwordLineEdit.text()
+            requiredAdminRights = self.requiredAdminRightsCheckBox.isChecked()
+            if self.chosenPasswordWidget is None:
+                add_data(domain, username, password, requiredAdminRights)
+                self.errorLabel.setText("Data has been added")
+            else:
+                key_change(domain, username, password, requiredAdminRights)
+                self.errorLabel.setText("Data has been saved")
+                self.chosenPasswordWidget = None
+            updatePasswordWidgetsList(get_all())
 
         def backToMainWindow():
             self.centralStackedWidget.setCurrentIndex(0)
+            self.toolsBarFrame.show()
+
+        def changePasswordVisibility(lineEdit: QtWidgets.QLineEdit):
+            if lineEdit.echoMode() == QtWidgets.QLineEdit.Normal:
+                lineEdit.setEchoMode(QtWidgets.QLineEdit.Password)
+            else:
+                lineEdit.setEchoMode(QtWidgets.QLineEdit.Normal)
+
+        def editPasswordWidget(chosenWidget: QtWidgets.QWidget | None):
+            self.errorLabel.setText("")
+            self.toolsBarFrame.hide()
+            self.centralStackedWidget.setCurrentIndex(1)
+            if chosenWidget is not None:
+                self.chosenPasswordWidget = chosenWidget
+                self.domainLineEdit.setText(chosenWidget.findChild(QtWidgets.QLineEdit, "domainLineEdit").text())
+                self.usernameLineEdit.setText(chosenWidget.findChild(QtWidgets.QLineEdit, "usernameLineEdit").text())
+                self.passwordLineEdit.setText(chosenWidget.findChild(QtWidgets.QLineEdit, "passwordLineEdit").text())
+                self.requiredAdminRightsCheckBox.setChecked(
+                    chosenWidget.findChild(QtWidgets.QLabel, "adminLabel").text() != "")
+
+        def deletePasswordWidget(chosenWidget: QtWidgets.QWidget):
+            self.chosenPasswordWidget = chosenWidget
+            self.deleteDialog = QtWidgets.QDialog()
+            Ui_deletePasswordDialog().setupUi(self.deleteDialog)
+            if self.chosenPasswordWidget.findChild(QtWidgets.QLabel, "adminLabel").text() == "":
+                self.deleteDialog.findChild(QtWidgets.QLabel, "adminLabel").hide()
+                self.deleteDialog.findChild(QtWidgets.QLineEdit, "passwordLineEdit").hide()
+            self.deleteDialog.findChild(QtWidgets.QDialogButtonBox, "buttonBox").button(
+                QtWidgets.QDialogButtonBox.Ok).clicked.connect(
+                approveDeletion)
+            okButton = self.deleteDialog.findChild(QtWidgets.QDialogButtonBox, "buttonBox").button(
+                QtWidgets.QDialogButtonBox.Ok)
+
+            if okButton:
+                okButton.clicked.disconnect()
+                okButton.clicked.connect(approveDeletion)
+            self.deleteDialog.exec_()
 
         def deletePasswordWidgetsList():
             count = self.passwordsGridLayout.count()
@@ -337,6 +392,7 @@ class Ui_MainWindow(object):
                 return
 
             for i in reversed(range(1, count)):
+                self.passwordsGridLayout.itemAt(i).widget().deleteLater()
                 self.passwordsGridLayout.removeWidget(self.passwordsGridLayout.itemAt(i).widget())
 
         def updatePasswordWidgetsList(query_list: List[PasswordQuery]):
@@ -344,32 +400,47 @@ class Ui_MainWindow(object):
             self.scrollAreaWidgetContents.setMinimumHeight(240)
             QtWidgets.QApplication.processEvents()
             for i, query in enumerate(query_list):
-                self.passwordQueryWidget = QtWidgets.QWidget()
-                self.passwordQueryWidget.setSizePolicy(
+                passwordQueryWidget: QtWidgets.QWidget = QtWidgets.QWidget()
+                passwordQueryWidget.setSizePolicy(
                     QtWidgets.QSizePolicy.Preferred,
                     QtWidgets.QSizePolicy.Preferred
                 )
 
-                self.passwordQueryWidget.setFixedSize(710, 240)
+                passwordQueryWidget.setFixedSize(710, 240)
                 passwordQueryWidgetUi = Ui_passwordQueryWidget()
-                passwordQueryWidgetUi.setupUi(self.passwordQueryWidget)
-                self.passwordsGridLayout.addWidget(self.passwordQueryWidget, (1 + i) // 2,
+                passwordQueryWidgetUi.setupUi(passwordQueryWidget)
+                self.passwordsGridLayout.addWidget(passwordQueryWidget, (1 + i) // 2,
                                                    1 + (1 + i) % 2, 1, 1)
                 self.scrollAreaWidgetContents.setMinimumHeight(
-                    (1 + i // 2) * (self.passwordQueryWidget.height() + 20))
+                    (1 + i // 2) * (passwordQueryWidget.height() + 20))
                 QtWidgets.QApplication.processEvents()
                 self.scrollAreaWidgetContents.adjustSize()
-                self.passwordQueryWidget.findChild(QtWidgets.QLineEdit, "domainLineEdit").setText(query.domain)
-                self.passwordQueryWidget.findChild(QtWidgets.QLineEdit, "usernameLineEdit").setText(
+                passwordQueryWidget.findChild(QtWidgets.QLineEdit, "domainLineEdit").setText(query.domain)
+                passwordQueryWidget.findChild(QtWidgets.QLineEdit, "usernameLineEdit").setText(
                     query.username)
-                self.passwordQueryWidget.findChild(QtWidgets.QLineEdit, "passwordLineEdit").setText(
+                passwordQueryWidget.findChild(QtWidgets.QLineEdit, "passwordLineEdit").setText(
                     query.password)
+                passwordQueryWidget.findChild(QtWidgets.QLabel, "adminLabel").setText(
+                    "Protected With Admin Rights" if query.is_admin_protected else "")
+                passwordQueryWidget.findChild(QtWidgets.QPushButton, "showPasswordButton").clicked.connect(
+                    lambda checked,
+                           lineEdit=passwordQueryWidget.findChild(QtWidgets.QLineEdit, "passwordLineEdit"):
+                    changePasswordVisibility(lineEdit))
+                passwordQueryWidget.findChild(QtWidgets.QPushButton, "editQueryButton").clicked.connect(
+                    lambda checked,
+                           widget=passwordQueryWidget: editPasswordWidget(widget))
+                passwordQueryWidget.findChild(QtWidgets.QPushButton, "deleteQueryButton").clicked.connect(
+                    lambda checked,
+                           widget=passwordQueryWidget: deletePasswordWidget(widget))
 
         self.getAllDataButton.clicked.connect(lambda: updatePasswordWidgetsList(get_all()))
         self.findKeyLineEdit.textChanged.connect(
             lambda: updatePasswordWidgetsList(fuzzy_search(self.findKeyLineEdit.text())))
         self.refreshMasterKeyButton.clicked.connect(updateMasterKeyResponse)
-        self.addKeyButton.clicked.connect(deletePasswordWidgetsList)
+        self.addKeyButton.clicked.connect(addPasswordQuery)
+        self.submitButton.clicked.connect(submitPasswordChanges)
+        self.backButton.clicked.connect(backToMainWindow)
+        self.exitButton.clicked.connect(lambda: sys.exit())
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -387,9 +458,9 @@ class Ui_MainWindow(object):
         self.keyFrame.setProperty("widgetStyleClass", _translate("MainWindow", "toolBar"))
         self.domainLabel.setText(_translate("MainWindow", "Domain"))
         self.domainLabel.setProperty("widgetStyleClass", _translate("MainWindow", "keyFrame"))
-        self.loginLabel.setText(_translate("MainWindow", "Login"))
+        self.usernameLabel.setText(_translate("MainWindow", "Username"))
         self.passwordLabel.setText(_translate("MainWindow", "Password"))
-        self.checkBox.setText(_translate("MainWindow", "Required Admin Rights"))
+        self.requiredAdminRightsCheckBox.setText(_translate("MainWindow", "Required Admin Rights"))
         self.submitButton.setText(_translate("MainWindow", "Submit"))
         self.backButton.setText(_translate("MainWindow", "Back"))
 
