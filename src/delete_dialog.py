@@ -43,28 +43,28 @@ class Ui_deletePasswordDialog(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.label = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.label.setObjectName("label")
-        self.verticalLayout.addWidget(self.label)
-        self.label_2 = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.label_2.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_2.setObjectName("label_2")
-        self.verticalLayout.addWidget(self.label_2)
-        self.lineEdit = QtWidgets.QLineEdit(self.verticalLayoutWidget)
-        self.lineEdit.setObjectName("lineEdit")
-        self.verticalLayout.addWidget(self.lineEdit)
+        self.sureLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        self.sureLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.sureLabel.setObjectName("sureLabel")
+        self.verticalLayout.addWidget(self.sureLabel)
+        self.adminLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        self.adminLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.adminLabel.setObjectName("adminLabel")
+        self.verticalLayout.addWidget(self.adminLabel)
+        self.passwordLineEdit = QtWidgets.QLineEdit(self.verticalLayoutWidget)
+        self.passwordLineEdit.setObjectName("passwordLineEdit")
+        self.verticalLayout.addWidget(self.passwordLineEdit)
         self.buttonBox = QtWidgets.QDialogButtonBox(self.verticalLayoutWidget)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setCenterButtons(True)
         self.buttonBox.setObjectName("buttonBox")
         self.verticalLayout.addWidget(self.buttonBox)
-        self.label_3 = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.label_3.setText("")
-        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_3.setObjectName("label_3")
-        self.verticalLayout.addWidget(self.label_3)
+        self.errorLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        self.errorLabel.setText("")
+        self.errorLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.errorLabel.setObjectName("errorLabel")
+        self.verticalLayout.addWidget(self.errorLabel)
 
         self.retranslateUi(deletePasswordDialog)
         self.buttonBox.accepted.connect(deletePasswordDialog.accept) # type: ignore
@@ -74,9 +74,9 @@ class Ui_deletePasswordDialog(object):
     def retranslateUi(self, deletePasswordDialog):
         _translate = QtCore.QCoreApplication.translate
         deletePasswordDialog.setWindowTitle(_translate("deletePasswordDialog", "Dialog"))
-        self.label.setText(_translate("deletePasswordDialog", "Are you sure\n"
+        self.sureLabel.setText(_translate("deletePasswordDialog", "Are you sure\n"
 "you want to delete password?"))
-        self.label_2.setText(_translate("deletePasswordDialog", "Admin Password:"))
+        self.adminLabel.setText(_translate("deletePasswordDialog", "Admin Password:"))
 
 
 if __name__ == "__main__":

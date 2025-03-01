@@ -13,7 +13,8 @@ class PasswordQuery:
 
 
 faker = Faker()
-n = 100
+n = 15
+admin_password = "123"
 
 db = [PasswordQuery(faker.domain_name(), faker.user_name(), faker.password(), bool(randint(0, 1)))
       for i in range(n)]
@@ -26,10 +27,6 @@ def print_decorator(func: Callable):
 
     return wrapper
 
-
-@print_decorator
-def check_admin_preferences() -> bool:
-    return bool(randint(0,1))
 
 
 @print_decorator
@@ -73,4 +70,4 @@ def key_change(domain: str, username: str, password: str, is_admin_protected: bo
 
 @print_decorator
 def fuzzy_search(domain: str):
-    return [query for query in db if random() < 0.6]
+    return [query for query in db if random() < 0.1]
