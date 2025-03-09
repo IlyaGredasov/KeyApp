@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_alertWidget(object):
     def setupUi(self, alertWidget):
         alertWidget.setObjectName("alertWidget")
-        alertWidget.resize(1200, 675)
+        alertWidget.resize(900, 450)
         alertWidget.setStyleSheet("QWidget {\n"
 "    background-color: #394573;\n"
 "    color: #fafafc;\n"
@@ -25,11 +25,11 @@ class Ui_alertWidget(object):
 "}\n"
 "")
         self.pictureLabel = QtWidgets.QLabel(alertWidget)
-        self.pictureLabel.setGeometry(QtCore.QRect(150, 319, 900, 281))
+        self.pictureLabel.setGeometry(QtCore.QRect(0, 210, 900, 271))
         self.pictureLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.pictureLabel.setObjectName("pictureLabel")
         self.textLabel = QtWidgets.QLabel(alertWidget)
-        self.textLabel.setGeometry(QtCore.QRect(150, 100, 900, 321))
+        self.textLabel.setGeometry(QtCore.QRect(0, 0, 900, 321))
         self.textLabel.setText("")
         self.textLabel.setPixmap(QtGui.QPixmap(".\\design\\alert.png"))
         self.textLabel.setAlignment(QtCore.Qt.AlignCenter)
