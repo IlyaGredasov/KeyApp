@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import threading
 
 # Form implementation generated from reading ui file '.\design\main_window.ui'
 #
@@ -14,7 +15,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1750, 1080)
+        MainWindow.resize(1920, 1080)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -296,11 +297,23 @@ class Ui_MainWindow(object):
 
         from password_query import Ui_passwordQueryWidget
         from delete_dialog import Ui_deletePasswordDialog
+        from alert import Ui_alertWidget
         from mock_db_api import PasswordQuery, admin_password, refresh_master_key, get_all, get_correct, \
             add_data, delete_data, key_change, fuzzy_search
         from typing import List
         self.deleteDialog = QtWidgets.QDialog()
         self.chosenPasswordWidget: QtWidgets.QWidget | None = None
+        self.isFlashDriverFound = False
+        self.alertWidget = QtWidgets.QWidget()
+        Ui_alertWidget().setupUi(self.alertWidget)
+
+        def checkInterrupt():
+            if self.isFlashDriverFound:
+                self.alertWidget.hide()
+                MainWindow.show()
+            else:
+                self.alertWidget.show()
+                MainWindow.hide()
 
         def deletePasswordQuery():
             self.chosenPasswordWidget.deleteLater()
@@ -310,12 +323,10 @@ class Ui_MainWindow(object):
             updatePasswordWidgetsList(get_all())
 
         def approveDeletion():
-            if self.chosenPasswordWidget.findChild(QtWidgets.QLabel, "adminLabel").text() != "":
-                if self.deleteDialog.findChild(QtWidgets.QLineEdit, "passwordLineEdit").text() == admin_password:
-                    deletePasswordQuery()
-                    self.deleteDialog.accept()
-                else:
-                    self.deleteDialog.findChild(QtWidgets.QLabel, "errorLabel").setText("Wrong password")
+            if self.chosenPasswordWidget.findChild(QtWidgets.QLabel,
+                                                   "adminLabel").text() != "" and self.deleteDialog.findChild(
+                QtWidgets.QLineEdit, "passwordLineEdit").text() != admin_password:
+                self.deleteDialog.findChild(QtWidgets.QLabel, "errorLabel").setText("Wrong password")
             else:
                 deletePasswordQuery()
                 self.deleteDialog.accept()
@@ -325,7 +336,7 @@ class Ui_MainWindow(object):
             self.domainLineEdit.setText("")
             self.usernameLineEdit.setText("")
             self.passwordLineEdit.setText("")
-            editPasswordWidget(None)
+            editPasswordWidget()
 
         def updateMasterKeyResponse():
             refresh_master_key()
@@ -355,7 +366,7 @@ class Ui_MainWindow(object):
             else:
                 lineEdit.setEchoMode(QtWidgets.QLineEdit.Normal)
 
-        def editPasswordWidget(chosenWidget: QtWidgets.QWidget | None):
+        def editPasswordWidget(chosenWidget: QtWidgets.QWidget | None = None):
             self.errorLabel.setText("")
             self.toolsBarFrame.hide()
             self.centralStackedWidget.setCurrentIndex(1)
@@ -385,6 +396,10 @@ class Ui_MainWindow(object):
                 okButton.clicked.connect(approveDeletion)
             self.deleteDialog.exec_()
 
+        self.interruptTimer = QtCore.QTimer()
+        self.interruptTimer.timeout.connect(checkInterrupt)
+        self.interruptTimer.start(1000)
+
         def deletePasswordWidgetsList():
             count = self.passwordsGridLayout.count()
             if count <= 1:
@@ -397,6 +412,7 @@ class Ui_MainWindow(object):
 
         def updatePasswordWidgetsList(query_list: List[PasswordQuery]):
             deletePasswordWidgetsList()
+            self.responseLabel.setText("")
             self.scrollAreaWidgetContents.setMinimumHeight(240)
             QtWidgets.QApplication.processEvents()
             for i, query in enumerate(query_list):
