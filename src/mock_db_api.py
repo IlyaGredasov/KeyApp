@@ -28,7 +28,6 @@ def print_decorator(func: Callable):
     return wrapper
 
 
-
 @print_decorator
 def refresh_master_key():
     return True
@@ -70,4 +69,4 @@ def key_change(domain: str, username: str, password: str, is_admin_protected: bo
 
 @print_decorator
 def fuzzy_search(domain: str):
-    return [query for query in db if random() < 0.1]
+    return [query for query in db if random() < 0.6]
