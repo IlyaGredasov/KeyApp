@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import threading
 
 # Form implementation generated from reading ui file '.\design\main_window.ui'
 #
@@ -298,17 +297,16 @@ class Ui_MainWindow(object):
         from password_query import Ui_passwordQueryWidget
         from delete_dialog import Ui_deletePasswordDialog
         from alert import Ui_alertWidget
-        from mock_db_api import PasswordQuery, admin_password, refresh_master_key, get_all, get_correct, \
-            add_data, delete_data, key_change, fuzzy_search
+        from mock_db_api import PasswordQuery, refreshMasterKey, getAll, \
+            addQuery, deleteQuery, changeQuery, fuzzySearch, checkAdminPassword, checkFlashDriver
         from typing import List
         self.deleteDialog = QtWidgets.QDialog()
         self.chosenPasswordWidget: QtWidgets.QWidget | None = None
-        self.isFlashDriverFound = False
         self.alertWidget = QtWidgets.QWidget()
         Ui_alertWidget().setupUi(self.alertWidget)
 
         def checkInterrupt():
-            if self.isFlashDriverFound:
+            if checkFlashDriver():
                 self.alertWidget.hide()
                 MainWindow.show()
             else:
@@ -318,14 +316,15 @@ class Ui_MainWindow(object):
         def deletePasswordQuery():
             self.chosenPasswordWidget.deleteLater()
             self.passwordsGridLayout.removeWidget(self.chosenPasswordWidget)
-            delete_data(self.chosenPasswordWidget.findChild(QtWidgets.QLineEdit, "domainLineEdit").text())
+            deleteQuery(self.chosenPasswordWidget.findChild(QtWidgets.QLineEdit, "domainLineEdit").text())
             self.chosenPasswordWidget = None
-            updatePasswordWidgetsList(get_all())
+            updatePasswordWidgetsList(getAll())
 
         def approveDeletion():
             if self.chosenPasswordWidget.findChild(QtWidgets.QLabel,
-                                                   "adminLabel").text() != "" and self.deleteDialog.findChild(
-                QtWidgets.QLineEdit, "passwordLineEdit").text() != admin_password:
+                                                   "adminLabel").text() != "" and not checkAdminPassword(
+                self.deleteDialog.findChild(
+                    QtWidgets.QLineEdit, "passwordLineEdit").text()):
                 self.deleteDialog.findChild(QtWidgets.QLabel, "errorLabel").setText("Wrong password")
             else:
                 deletePasswordQuery()
@@ -339,7 +338,7 @@ class Ui_MainWindow(object):
             editPasswordWidget()
 
         def updateMasterKeyResponse():
-            refresh_master_key()
+            refreshMasterKey()
             self.responseLabel.setText("Master key has been refreshed")
 
         def submitPasswordChanges():
@@ -348,13 +347,13 @@ class Ui_MainWindow(object):
             password = self.passwordLineEdit.text()
             requiredAdminRights = self.requiredAdminRightsCheckBox.isChecked()
             if self.chosenPasswordWidget is None:
-                add_data(domain, username, password, requiredAdminRights)
+                addQuery(domain, username, password, requiredAdminRights)
                 self.errorLabel.setText("Data has been added")
             else:
-                key_change(domain, username, password, requiredAdminRights)
+                changeQuery(domain, username, password, requiredAdminRights)
                 self.errorLabel.setText("Data has been saved")
                 self.chosenPasswordWidget = None
-            updatePasswordWidgetsList(get_all())
+            updatePasswordWidgetsList(getAll())
 
         def backToMainWindow():
             self.centralStackedWidget.setCurrentIndex(0)
@@ -398,7 +397,7 @@ class Ui_MainWindow(object):
 
         self.interruptTimer = QtCore.QTimer()
         self.interruptTimer.timeout.connect(checkInterrupt)
-        self.interruptTimer.start(1000)
+        self.interruptTimer.start(5000)
 
         def deletePasswordWidgetsList():
             count = self.passwordsGridLayout.count()
@@ -437,7 +436,7 @@ class Ui_MainWindow(object):
                 passwordQueryWidget.findChild(QtWidgets.QLineEdit, "passwordLineEdit").setText(
                     query.password)
                 passwordQueryWidget.findChild(QtWidgets.QLabel, "adminLabel").setText(
-                    "Protected With Admin Rights" if query.is_admin_protected else "")
+                    "Protected With Admin Rights" if query.isAdminProtected else "")
                 passwordQueryWidget.findChild(QtWidgets.QPushButton, "showPasswordButton").clicked.connect(
                     lambda checked,
                            lineEdit=passwordQueryWidget.findChild(QtWidgets.QLineEdit, "passwordLineEdit"):
@@ -449,9 +448,9 @@ class Ui_MainWindow(object):
                     lambda checked,
                            widget=passwordQueryWidget: deletePasswordWidget(widget))
 
-        self.getAllDataButton.clicked.connect(lambda: updatePasswordWidgetsList(get_all()))
+        self.getAllDataButton.clicked.connect(lambda: updatePasswordWidgetsList(getAll()))
         self.findKeyLineEdit.textChanged.connect(
-            lambda: updatePasswordWidgetsList(fuzzy_search(self.findKeyLineEdit.text())))
+            lambda: updatePasswordWidgetsList(fuzzySearch(self.findKeyLineEdit.text())))
         self.refreshMasterKeyButton.clicked.connect(updateMasterKeyResponse)
         self.addKeyButton.clicked.connect(addPasswordQuery)
         self.submitButton.clicked.connect(submitPasswordChanges)
