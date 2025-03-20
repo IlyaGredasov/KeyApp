@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from random import randint, random
+from random import random
 from typing import List
 
 from faker import Faker
@@ -15,9 +15,9 @@ class PasswordQuery:
 
 faker = Faker()
 n = 15
-admin_password = "123"
+adminPassword = "123"
 
-db = [PasswordQuery(faker.domain_name(), faker.user_name(), faker.password(), bool(randint(0, 1)))
+db = [PasswordQuery(faker.domain_name(), faker.user_name(), faker.password())
       for i in range(n)]
 
 
@@ -33,8 +33,8 @@ def getByDomain(domain: str) -> PasswordQuery:
     return [query for query in db if query.domain == domain][0]
 
 
-def addQuery(domain: str, username: str, password: str, is_admin_protected: bool) -> bool:
-    db.append(PasswordQuery(domain, username, password, is_admin_protected))
+def addQuery(domain: str, username: str, password: str, isAdminProtected: bool = 0) -> bool:
+    db.append(PasswordQuery(domain, username, password, isAdminProtected))
     return True
 
 
@@ -46,10 +46,10 @@ def deleteQuery(domain: str) -> bool:
     return False
 
 
-def changeQuery(domain: str, username: str, password: str, is_admin_protected: bool) -> bool:
+def changeQuery(domain: str, username: str, password: str, isAdminProtected: bool) -> bool:
     for i in range(len(db)):
         if db[i].domain == domain:
-            db[i] = PasswordQuery(domain, username, password, is_admin_protected)
+            db[i] = PasswordQuery(domain, username, password, isAdminProtected)
             return True
     return False
 
@@ -59,7 +59,7 @@ def fuzzySearch(domain: str):
 
 
 def checkAdminPassword(password: str) -> bool:
-    return password == admin_password
+    return password == adminPassword
 
 
 def checkFlashDriver() -> bool:

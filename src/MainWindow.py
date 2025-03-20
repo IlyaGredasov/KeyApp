@@ -294,10 +294,10 @@ class Ui_MainWindow(object):
         Logic implementation
         """
 
-        from password_query import Ui_passwordQueryWidget
-        from delete_dialog import Ui_deletePasswordDialog
-        from alert import Ui_alertWidget
-        from mock_db_api import PasswordQuery, refreshMasterKey, getAll, \
+        from PasswordQuery import Ui_passwordQueryWidget
+        from DeleteDialog import Ui_deletePasswordDialog
+        from Alert import Ui_alertWidget
+        from WebApi import PasswordQuery, refreshMasterKey, getAll, \
             addQuery, deleteQuery, changeQuery, fuzzySearch, checkAdminPassword, checkFlashDriver
         from typing import List
         self.deleteDialog = QtWidgets.QDialog()
@@ -354,6 +354,7 @@ class Ui_MainWindow(object):
                 self.errorLabel.setText("Data has been saved")
                 self.chosenPasswordWidget = None
             updatePasswordWidgetsList(getAll())
+            self.centralStackedWidget.setCurrentIndex(0)
 
         def backToMainWindow():
             self.centralStackedWidget.setCurrentIndex(0)
@@ -409,12 +410,13 @@ class Ui_MainWindow(object):
                 self.passwordsGridLayout.itemAt(i).widget().deleteLater()
                 self.passwordsGridLayout.removeWidget(self.passwordsGridLayout.itemAt(i).widget())
 
-        def updatePasswordWidgetsList(query_list: List[PasswordQuery]):
+        def updatePasswordWidgetsList(queryList: List[PasswordQuery]):
             deletePasswordWidgetsList()
+            self.scrollAreaWidgetContents.resize(self.scrollAreaWidgetContents.sizeHint())
             self.responseLabel.setText("")
             self.scrollAreaWidgetContents.setMinimumHeight(240)
             QtWidgets.QApplication.processEvents()
-            for i, query in enumerate(query_list):
+            for i, query in enumerate(queryList):
                 passwordQueryWidget: QtWidgets.QWidget = QtWidgets.QWidget()
                 passwordQueryWidget.setSizePolicy(
                     QtWidgets.QSizePolicy.Preferred,
@@ -427,7 +429,7 @@ class Ui_MainWindow(object):
                 self.passwordsGridLayout.addWidget(passwordQueryWidget, (1 + i) // 2,
                                                    1 + (1 + i) % 2, 1, 1)
                 self.scrollAreaWidgetContents.setMinimumHeight(
-                    (1 + i // 2) * (passwordQueryWidget.height() + 20))
+                    (1 + (i + 1) // 2) * (passwordQueryWidget.height() + 20))
                 QtWidgets.QApplication.processEvents()
                 self.scrollAreaWidgetContents.adjustSize()
                 passwordQueryWidget.findChild(QtWidgets.QLineEdit, "domainLineEdit").setText(query.domain)

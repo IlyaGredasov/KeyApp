@@ -16,27 +16,27 @@ class Ui_deletePasswordDialog(object):
         deletePasswordDialog.setObjectName("deletePasswordDialog")
         deletePasswordDialog.resize(410, 260)
         deletePasswordDialog.setStyleSheet("QWidget {\n"
-"    background-color: #262f4d;\n"
-"    color: #fafafc;\n"
-"    font-family: \'SF Pro\';\n"
-"    font-size: 14pt;\n"
-"    font-weight: 1000;\n"
-"}\n"
-"\n"
-"QPushButton {\n"
-"    background-color: #394573;\n"
-"    border: none;\n"
-"    border-radius: 15px;\n"
-"    padding: 10px 20px;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background-color: #4a4c54;\n"
-"}\n"
-"\n"
-"QLabel {\n"
-"    text-align: center;\n"
-"}")
+                                           "    background-color: #262f4d;\n"
+                                           "    color: #fafafc;\n"
+                                           "    font-family: \'SF Pro\';\n"
+                                           "    font-size: 14pt;\n"
+                                           "    font-weight: 1000;\n"
+                                           "}\n"
+                                           "\n"
+                                           "QPushButton {\n"
+                                           "    background-color: #394573;\n"
+                                           "    border: none;\n"
+                                           "    border-radius: 15px;\n"
+                                           "    padding: 10px 20px;\n"
+                                           "}\n"
+                                           "\n"
+                                           "QPushButton:hover {\n"
+                                           "    background-color: #4a4c54;\n"
+                                           "}\n"
+                                           "\n"
+                                           "QLabel {\n"
+                                           "    text-align: center;\n"
+                                           "}")
         self.verticalLayoutWidget = QtWidgets.QWidget(deletePasswordDialog)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 10, 391, 241))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
@@ -56,7 +56,7 @@ class Ui_deletePasswordDialog(object):
         self.verticalLayout.addWidget(self.passwordLineEdit)
         self.buttonBox = QtWidgets.QDialogButtonBox(self.verticalLayoutWidget)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setCenterButtons(True)
         self.buttonBox.setObjectName("buttonBox")
         self.verticalLayout.addWidget(self.buttonBox)
@@ -67,20 +67,21 @@ class Ui_deletePasswordDialog(object):
         self.verticalLayout.addWidget(self.errorLabel)
 
         self.retranslateUi(deletePasswordDialog)
-        self.buttonBox.accepted.connect(deletePasswordDialog.accept) # type: ignore
-        self.buttonBox.rejected.connect(deletePasswordDialog.reject) # type: ignore
+        self.buttonBox.accepted.connect(deletePasswordDialog.accept)  # type: ignore
+        self.buttonBox.rejected.connect(deletePasswordDialog.reject)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(deletePasswordDialog)
 
     def retranslateUi(self, deletePasswordDialog):
         _translate = QtCore.QCoreApplication.translate
         deletePasswordDialog.setWindowTitle(_translate("deletePasswordDialog", "Dialog"))
         self.sureLabel.setText(_translate("deletePasswordDialog", "Are you sure\n"
-"you want to delete password?"))
+                                                                  "you want to delete password?"))
         self.adminLabel.setText(_translate("deletePasswordDialog", "Admin Password:"))
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     deletePasswordDialog = QtWidgets.QDialog()
     ui = Ui_deletePasswordDialog()
