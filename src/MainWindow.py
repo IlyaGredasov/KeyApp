@@ -354,7 +354,8 @@ class Ui_MainWindow(object):
                 self.errorLabel.setText("Data has been saved")
                 self.chosenPasswordWidget = None
             updatePasswordWidgetsList(getAll())
-            self.centralStackedWidget.setCurrentIndex(0)
+            self.domainLineEdit.setReadOnly(False)
+            backToMainWindow()
 
         def backToMainWindow():
             self.centralStackedWidget.setCurrentIndex(0)
@@ -367,6 +368,7 @@ class Ui_MainWindow(object):
                 lineEdit.setEchoMode(QtWidgets.QLineEdit.Normal)
 
         def editPasswordWidget(chosenWidget: QtWidgets.QWidget | None = None):
+            self.domainLineEdit.setReadOnly(chosenWidget is not None)
             self.errorLabel.setText("")
             self.toolsBarFrame.hide()
             self.centralStackedWidget.setCurrentIndex(1)
@@ -484,7 +486,6 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()

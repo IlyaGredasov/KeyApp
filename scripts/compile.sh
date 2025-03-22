@@ -11,12 +11,9 @@ pyinstaller --onefile --name=KeyApp \
   --add-data="./src/DeleteDialog.py:." \
   --add-data="./src/PasswordQuery.py:." \
   --add-data="./src/WebApi.py:." \
-  --hidden-import=faker \
-  --hidden-import=PyQt5.sip \
-  --hidden-import=PyQt5.QtWidgets \
-  --hidden-import=PyQt5.QtGui \
-  --hidden-import=PyQt5.QtCore \
+  --add-data="./design/alert.png:." \
   --collect-submodules PyQt5 \
+  --collect-submodules requests \
   --collect-binaries python3.12 \
   ./src/MainWindow.py
 
