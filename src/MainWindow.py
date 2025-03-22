@@ -256,6 +256,7 @@ class Ui_MainWindow(object):
         self.keyActionVerticalLayout.addWidget(self.domainLabel)
         self.domainLineEdit = QtWidgets.QLineEdit(self.verticalLayoutWidget_3)
         self.domainLineEdit.setObjectName("domainLineEdit")
+        self.domainLineEdit.setReadOnly(True)
         self.keyActionVerticalLayout.addWidget(self.domainLineEdit)
         self.usernameLabel = QtWidgets.QLabel(self.verticalLayoutWidget_3)
         self.usernameLabel.setAlignment(QtCore.Qt.AlignCenter)
@@ -354,7 +355,7 @@ class Ui_MainWindow(object):
                 self.errorLabel.setText("Data has been saved")
                 self.chosenPasswordWidget = None
             updatePasswordWidgetsList(getAll())
-            self.centralStackedWidget.setCurrentIndex(0)
+            backToMainWindow()
 
         def backToMainWindow():
             self.centralStackedWidget.setCurrentIndex(0)
@@ -484,7 +485,6 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
