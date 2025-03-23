@@ -298,7 +298,7 @@ class Ui_MainWindow(object):
         from DeleteDialog import Ui_deletePasswordDialog
         from Alert import Ui_alertWidget
         from WebApi import PasswordQuery, refreshMasterKey, getAll, \
-            addQuery, deleteQuery, changeQuery, fuzzySearch, checkAdminPassword, checkFlashDriver
+            addQuery, deleteQuery, changeQuery, fuzzySearch, checkAdminPassword, checkToken
         from typing import List
         self.deleteDialog = QtWidgets.QDialog()
         self.chosenPasswordWidget: QtWidgets.QWidget | None = None
@@ -306,7 +306,7 @@ class Ui_MainWindow(object):
         Ui_alertWidget().setupUi(self.alertWidget)
 
         def checkInterrupt():
-            if checkFlashDriver():
+            if checkToken():
                 self.alertWidget.hide()
                 MainWindow.show()
             else:
@@ -342,9 +342,9 @@ class Ui_MainWindow(object):
             self.responseLabel.setText("Master key has been refreshed")
 
         def submitPasswordChanges():
-            domain = self.domainLineEdit.text()
-            username = self.usernameLineEdit.text()
-            password = self.passwordLineEdit.text()
+            domain = self.domainLineEdit.text().replace("\n", "")
+            username = self.usernameLineEdit.text().replace("\n", "")
+            password = self.passwordLineEdit.text().replace("\n", "")
             requiredAdminRights = self.requiredAdminRightsCheckBox.isChecked()
             if self.chosenPasswordWidget is None:
                 addQuery(domain, username, password, requiredAdminRights)
@@ -359,6 +359,7 @@ class Ui_MainWindow(object):
 
         def backToMainWindow():
             self.centralStackedWidget.setCurrentIndex(0)
+            self.responseLabel.setText("")
             self.toolsBarFrame.show()
 
         def changePasswordVisibility(lineEdit: QtWidgets.QLineEdit):
@@ -453,13 +454,13 @@ class Ui_MainWindow(object):
                            widget=passwordQueryWidget: deletePasswordWidget(widget))
 
         self.getAllDataButton.clicked.connect(lambda: updatePasswordWidgetsList(getAll()))
-        self.findKeyLineEdit.textChanged.connect(
+        self.findKeyLineEdit.returnPressed.connect(
             lambda: updatePasswordWidgetsList(fuzzySearch(self.findKeyLineEdit.text())))
         self.refreshMasterKeyButton.clicked.connect(updateMasterKeyResponse)
         self.addKeyButton.clicked.connect(addPasswordQuery)
         self.submitButton.clicked.connect(submitPasswordChanges)
         self.backButton.clicked.connect(backToMainWindow)
-        self.exitButton.clicked.connect(lambda: sys.exit())
+        self.exitButton.clicked.connect(sys.exit)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
