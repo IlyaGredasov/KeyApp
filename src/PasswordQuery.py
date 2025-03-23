@@ -117,7 +117,6 @@ class Ui_passwordQueryWidget(object):
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     passwordQueryWidget = QtWidgets.QWidget()
     ui = Ui_passwordQueryWidget()
