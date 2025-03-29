@@ -298,20 +298,26 @@ class Ui_MainWindow(object):
         from DeleteDialog import Ui_deletePasswordDialog
         from Alert import Ui_alertWidget
         from WebApi import PasswordQuery, refreshMasterKey, getAll, \
-            addQuery, deleteQuery, changeQuery, fuzzySearch, checkAdminPassword, checkToken
+            addQuery, deleteQuery, changeQuery, fuzzySearch, checkAdminPassword, checkToken, preventiveCheckToken
         from typing import List
         self.deleteDialog = QtWidgets.QDialog()
         self.chosenPasswordWidget: QtWidgets.QWidget | None = None
         self.alertWidget = QtWidgets.QWidget()
         Ui_alertWidget().setupUi(self.alertWidget)
 
+        def showMainWindowSetup():
+            self.alertWidget.hide()
+            MainWindow.show()
+
+        def showAlertWindowSetup():
+            self.alertWidget.show()
+            MainWindow.hide()
+
         def checkInterrupt():
             if checkToken():
-                self.alertWidget.hide()
-                MainWindow.show()
+                showMainWindowSetup()
             else:
-                self.alertWidget.show()
-                MainWindow.hide()
+                showAlertWindowSetup()
 
         def deletePasswordQuery():
             self.chosenPasswordWidget.deleteLater()
@@ -337,10 +343,12 @@ class Ui_MainWindow(object):
             self.passwordLineEdit.setText("")
             editPasswordWidget()
 
+        @preventiveCheckToken(onFailure=showAlertWindowSetup)
         def updateMasterKeyResponse():
             refreshMasterKey()
             self.responseLabel.setText("Master key has been refreshed")
 
+        @preventiveCheckToken(onFailure=showAlertWindowSetup)
         def submitPasswordChanges():
             domain = self.domainLineEdit.text().replace("\n", "")
             username = self.usernameLineEdit.text().replace("\n", "")
@@ -381,6 +389,7 @@ class Ui_MainWindow(object):
                 self.requiredAdminRightsCheckBox.setChecked(
                     chosenWidget.findChild(QtWidgets.QLabel, "adminLabel").text() != "")
 
+        @preventiveCheckToken(onFailure=showAlertWindowSetup)
         def deletePasswordWidget(chosenWidget: QtWidgets.QWidget):
             self.chosenPasswordWidget = chosenWidget
             self.deleteDialog = QtWidgets.QDialog()
@@ -403,6 +412,7 @@ class Ui_MainWindow(object):
         self.interruptTimer.timeout.connect(checkInterrupt)
         self.interruptTimer.start(5000)
 
+        @preventiveCheckToken(onFailure=showAlertWindowSetup)
         def deletePasswordWidgetsList():
             count = self.passwordsGridLayout.count()
             if count <= 1:
@@ -413,6 +423,7 @@ class Ui_MainWindow(object):
                 self.passwordsGridLayout.itemAt(i).widget().deleteLater()
                 self.passwordsGridLayout.removeWidget(self.passwordsGridLayout.itemAt(i).widget())
 
+        @preventiveCheckToken(onFailure=showAlertWindowSetup)
         def updatePasswordWidgetsList(queryList: List[PasswordQuery]):
             deletePasswordWidgetsList()
             self.scrollAreaWidgetContents.resize(self.scrollAreaWidgetContents.sizeHint())
@@ -453,13 +464,20 @@ class Ui_MainWindow(object):
                     lambda checked,
                            widget=passwordQueryWidget: deletePasswordWidget(widget))
 
-        self.getAllDataButton.clicked.connect(lambda: updatePasswordWidgetsList(getAll()))
-        self.findKeyLineEdit.returnPressed.connect(
-            lambda: updatePasswordWidgetsList(fuzzySearch(self.findKeyLineEdit.text())))
-        self.refreshMasterKeyButton.clicked.connect(updateMasterKeyResponse)
-        self.addKeyButton.clicked.connect(addPasswordQuery)
-        self.submitButton.clicked.connect(submitPasswordChanges)
-        self.backButton.clicked.connect(backToMainWindow)
+        @preventiveCheckToken(onFailure=showAlertWindowSetup)
+        def getAllWidgets():
+            updatePasswordWidgetsList(getAll())
+
+        @preventiveCheckToken(onFailure=showAlertWindowSetup)
+        def getAllFuzzyWidgets():
+            updatePasswordWidgetsList(fuzzySearch(self.findKeyLineEdit.text()))
+
+        self.getAllDataButton.clicked.connect(lambda: getAllWidgets())
+        self.findKeyLineEdit.returnPressed.connect(lambda: getAllFuzzyWidgets())
+        self.refreshMasterKeyButton.clicked.connect(lambda: updateMasterKeyResponse())
+        self.addKeyButton.clicked.connect(lambda: addPasswordQuery())
+        self.submitButton.clicked.connect(lambda: submitPasswordChanges())
+        self.backButton.clicked.connect(lambda: backToMainWindow())
         self.exitButton.clicked.connect(sys.exit)
 
     def retranslateUi(self, MainWindow):
@@ -487,6 +505,7 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
