@@ -24,13 +24,12 @@ def preventiveRequest(url, method):
             bound.apply_defaults()
             funcArgs = dict(bound.arguments)
             del funcArgs['json']
-            if 'isAdminProtected' in funcArgs.keys():
-                del funcArgs['isAdminProtected']
             try:
                 print(func.__name__, funcArgs)
                 start = time.perf_counter()
                 r = eval(f"requests.{method}")(url=f'http://10.55.0.1:8000/{url}',
-                                               json=funcArgs, timeout=(10 if func.__name__ == "fuzzySearch" else 0.5, 10))
+                                               json=funcArgs,
+                                               timeout=(10 if func.__name__ == "fuzzySearch" else 1, 10))
                 end = time.perf_counter()
                 print(f"Request {method} took {end - start:.6f} seconds")
                 return func(*args, **kwargs, json=r.json())
@@ -68,18 +67,17 @@ def refreshMasterKey(json=None) -> bool:
 
 
 @preventiveRequest(url="get_all", method="get")
-def getAll(json=None) -> List[PasswordQuery]:
-    return [PasswordQuery(username=query['login'], password=query['password'], domain=query['domain']) for query in
-            json['data_list']]
+def getAll(json=None) -> int:
+    return int(json['password_count'])
 
 
 @preventiveRequest(url="get_correct", method="post")
-def getByDomain(domain: str, login: str = "", password: str = "", json=None) -> PasswordQuery:
-    return PasswordQuery(domain=domain, username=json['login'], password=json['password'])
+def getById(id: int, json=None) -> PasswordQuery:
+    return PasswordQuery(domain=json["domain"], username=json['login'], password=json['password'])
 
 
 @preventiveRequest(url="add_data", method="post")
-def addQuery(domain: str, login: str, password: str, isAdminProtected: bool = 0, json=None) -> bool:
+def addQuery(domain: str, login: str, password: str, json=None) -> bool:
     return json['status'] == "data_added"
 
 
@@ -89,8 +87,8 @@ def deleteQuery(domain: str, login: str = "", password: str = "", json=None) -> 
 
 
 @preventiveRequest(url="change_data", method="post")
-def changeQuery(domain: str, login: str, password: str, isAdminProtected: bool = 0, json=None) -> bool:
-    return json['status'] == "data_changed"
+def changeQuery(domain: str, login: str, password: str, json=None) -> str:
+    return json['status']
 
 
 @preventiveRequest(url="get_fuzzy", method="post")
