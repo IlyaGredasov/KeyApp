@@ -48,7 +48,7 @@ QWidget[widgetStyleClass=&quot;toolBar&quot;] {
 }
 
 
-QPushButton#submitButton, QPushButton#backButton {
+QPushButton#submitButton, QPushButton#backButton, QPushButton#showPasswordInEditButton {
 	text-align: center;
 	font-family: 'SF Pro';
     font-size: 14pt;
@@ -443,7 +443,7 @@ QCheckBox {
         <x>660</x>
         <y>300</y>
         <width>600</width>
-        <height>481</height>
+        <height>491</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -461,7 +461,7 @@ QCheckBox {
          <x>0</x>
          <y>0</y>
          <width>601</width>
-         <height>481</height>
+         <height>493</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="keyActionVerticalLayout">
@@ -525,6 +525,13 @@ QCheckBox {
          <widget class="QPushButton" name="backButton">
           <property name="text">
            <string>Back</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="showPasswordInEditButton">
+          <property name="text">
+           <string>Show Password</string>
           </property>
          </widget>
         </item>
