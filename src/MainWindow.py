@@ -12,7 +12,7 @@ import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from pathlib import Path
 
-from src.Logger import LoggerWriter
+from Logger import LoggerWriter
 
 
 class Ui_MainWindow(object):
