@@ -9,8 +9,11 @@
 
 import logging
 import sys
-from PyQt5 import QtCore, QtGui, QtWidgets
 from pathlib import Path
+
+from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
 
 from Logger import LoggerWriter
 
@@ -343,8 +346,7 @@ class Ui_MainWindow(object):
         def approveDeletion():
             if (self.chosenPasswordWidget.findChild(QtWidgets.QLabel, "adminLabel").text() != ""
                     and not checkAdminPassword(
-                        self.deleteDialog.findChild(QtWidgets.QLineEdit, "passwordLineEdit").text()
-                    )):
+                        self.deleteDialog.findChild(QtWidgets.QLineEdit, "passwordLineEdit").text())):
                 self.deleteDialog.findChild(QtWidgets.QLabel, "errorLabel").setText("Wrong password")
                 return
 
@@ -562,10 +564,7 @@ if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s]: %(message)s",
-        handlers=[
-            logging.FileHandler("application.log", encoding="utf-8"),
-            logging.StreamHandler(sys.__stdout__),
-        ]
+        handlers=[logging.FileHandler("application.log", encoding="utf-8"), logging.StreamHandler(sys.__stdout__)]
     )
     logger = logging.getLogger("KeyAppLogger")
 

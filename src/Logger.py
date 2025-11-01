@@ -1,5 +1,6 @@
-import sys
 import logging
+import sys
+
 
 class LoggerWriter:
     def __init__(self, logger, level):
