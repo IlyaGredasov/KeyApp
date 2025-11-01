@@ -1,10 +1,9 @@
 import inspect
+import requests
 import time
 from dataclasses import dataclass
 from functools import wraps
 from typing import List
-
-import requests
 
 
 @dataclass
