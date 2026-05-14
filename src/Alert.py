@@ -17,15 +17,17 @@ class Ui_alertWidget(object):
     def setupUi(self, alertWidget):
         alertWidget.setObjectName("alertWidget")
         alertWidget.resize(900, 450)
-        alertWidget.setStyleSheet("QWidget {\n"
-                                  "    background-color: #394573;\n"
-                                  "    color: #fafafc;\n"
-                                  "    font-family: \'SF Pro\';\n"
-                                  "    font-size: 14pt;\n"
-                                  "    text-align: left;\n"
-                                  "    font-weight: 1000;\n"
-                                  "}\n"
-                                  "")
+        alertWidget.setStyleSheet(
+            "QWidget {\n"
+            "    background-color: #394573;\n"
+            "    color: #fafafc;\n"
+            "    font-family: 'SF Pro';\n"
+            "    font-size: 14pt;\n"
+            "    text-align: left;\n"
+            "    font-weight: 1000;\n"
+            "}\n"
+            ""
+        )
         self.pictureLabel = QtWidgets.QLabel(alertWidget)
         self.pictureLabel.setGeometry(QtCore.QRect(0, 210, 900, 271))
         self.pictureLabel.setAlignment(QtCore.Qt.AlignCenter)
@@ -43,8 +45,13 @@ class Ui_alertWidget(object):
     def retranslateUi(self, alertWidget):
         _translate = QtCore.QCoreApplication.translate
         alertWidget.setWindowTitle(_translate("alertWidget", "Form"))
-        self.pictureLabel.setText(_translate("alertWidget", "Error: the flash drive has been pulled out\n"
-                                                            "To continue work, please, insert it back in"))
+        self.pictureLabel.setText(
+            _translate(
+                "alertWidget",
+                "Error: the flash drive has been pulled out\n"
+                "To continue work, please, insert it back in",
+            )
+        )
 
 
 if __name__ == "__main__":

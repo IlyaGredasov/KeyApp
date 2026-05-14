@@ -9,7 +9,6 @@
 
 
 from PyQt5 import QtCore
-from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 
 
@@ -19,48 +18,50 @@ class Ui_passwordQueryWidget(object):
         passwordQueryWidget.resize(710, 240)
         passwordQueryWidget.setMinimumSize(QtCore.QSize(710, 240))
         passwordQueryWidget.setMaximumSize(QtCore.QSize(710, 240))
-        passwordQueryWidget.setStyleSheet("QWidget {\n"
-                                          "    background-color: transparent;\n"
-                                          "    color: #fafafc;\n"
-                                          "    font-family: \'SF Pro\';\n"
-                                          "    font-size: 14pt;\n"
-                                          "    text-align: center;\n"
-                                          "    font-weight: 1000;\n"
-                                          "}\n"
-                                          "\n"
-                                          "QWidget#passwordQueryWidget {\n"
-                                          "    border: 4px solid #4a4c54;\n"
-                                          "    border-radius: 10px;\n"
-                                          "}\n"
-                                          "\n"
-                                          "QPushButton {\n"
-                                          "    background-color: #394573;\n"
-                                          "    border: none;\n"
-                                          "    border-radius: 15px;\n"
-                                          "    padding: 10px 20px;\n"
-                                          "    text-align: center;\n"
-                                          "}\n"
-                                          "\n"
-                                          "QPushButton:hover {\n"
-                                          "    background-color: #4a4c54;\n"
-                                          "}\n"
-                                          "\n"
-                                          "QLineEdit {\n"
-                                          "    background-color: transparent;\n"
-                                          "    border: 1px solid #394573;\n"
-                                          "    border-radius: 15px;\n"
-                                          "    padding: 10px 5px;\n"
-                                          "    padding-left: 30px;\n"
-                                          "}\n"
-                                          "\n"
-                                          "QLabel {\n"
-                                          "    background-color: transparent;\n"
-                                          "    color: #fafafc;\n"
-                                          "    font-family: \'SF Pro\';\n"
-                                          "    font-size: 14pt;\n"
-                                          "    qproperty-alignment: \'AlignCenter\';\n"
-                                          "    font-weight: 500;\n"
-                                          "}")
+        passwordQueryWidget.setStyleSheet(
+            "QWidget {\n"
+            "    background-color: transparent;\n"
+            "    color: #fafafc;\n"
+            "    font-family: 'SF Pro';\n"
+            "    font-size: 14pt;\n"
+            "    text-align: center;\n"
+            "    font-weight: 1000;\n"
+            "}\n"
+            "\n"
+            "QWidget#passwordQueryWidget {\n"
+            "    border: 4px solid #4a4c54;\n"
+            "    border-radius: 10px;\n"
+            "}\n"
+            "\n"
+            "QPushButton {\n"
+            "    background-color: #394573;\n"
+            "    border: none;\n"
+            "    border-radius: 15px;\n"
+            "    padding: 10px 20px;\n"
+            "    text-align: center;\n"
+            "}\n"
+            "\n"
+            "QPushButton:hover {\n"
+            "    background-color: #4a4c54;\n"
+            "}\n"
+            "\n"
+            "QLineEdit {\n"
+            "    background-color: transparent;\n"
+            "    border: 1px solid #394573;\n"
+            "    border-radius: 15px;\n"
+            "    padding: 10px 5px;\n"
+            "    padding-left: 30px;\n"
+            "}\n"
+            "\n"
+            "QLabel {\n"
+            "    background-color: transparent;\n"
+            "    color: #fafafc;\n"
+            "    font-family: 'SF Pro';\n"
+            "    font-size: 14pt;\n"
+            "    qproperty-alignment: 'AlignCenter';\n"
+            "    font-weight: 500;\n"
+            "}"
+        )
         self.gridLayoutWidget = QtWidgets.QWidget(passwordQueryWidget)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 6, 691, 231))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
@@ -109,8 +110,12 @@ class Ui_passwordQueryWidget(object):
         _translate = QtCore.QCoreApplication.translate
         passwordQueryWidget.setWindowTitle(_translate("passwordQueryWidget", "Form"))
         self.usernameLabel.setText(_translate("passwordQueryWidget", "Username"))
-        self.showPasswordButton.setText(_translate("passwordQueryWidget", "Show Password"))
-        self.adminLabel.setText(_translate("passwordQueryWidget", "Protected With Admin Rights"))
+        self.showPasswordButton.setText(
+            _translate("passwordQueryWidget", "Show Password")
+        )
+        self.adminLabel.setText(
+            _translate("passwordQueryWidget", "Protected With Admin Rights")
+        )
         self.domainLabel.setText(_translate("passwordQueryWidget", "Domain"))
         self.passwordLabel.setText(_translate("passwordQueryWidget", "Password"))
         self.editQueryButton.setText(_translate("passwordQueryWidget", "Edit"))

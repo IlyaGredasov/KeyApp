@@ -22,13 +22,15 @@ def preventiveRequest(url, method):
             bound = sig.bind(*args, **kwargs)
             bound.apply_defaults()
             funcArgs = dict(bound.arguments)
-            del funcArgs['json']
+            del funcArgs["json"]
             try:
                 print(func.__name__, funcArgs)
                 start = time.perf_counter()
-                r = eval(f"requests.{method}")(url=f'http://10.55.0.1:8000/{url}',
-                                               json=funcArgs,
-                                               timeout=(10 if func.__name__ == "fuzzySearch" else 1, 10))
+                r = eval(f"requests.{method}")(
+                    url=f"http://10.55.0.1:8000/{url}",
+                    json=funcArgs,
+                    timeout=(10 if func.__name__ == "fuzzySearch" else 1, 10),
+                )
                 end = time.perf_counter()
                 print(f"Request {method} took {end - start:.6f} seconds")
                 return func(*args, **kwargs, json=r.json())
@@ -43,7 +45,7 @@ def preventiveRequest(url, method):
 
 @preventiveRequest(url="check_token", method="get")
 def checkToken(json=None) -> bool:
-    return json['status'] == "Token is found"
+    return json["status"] == "Token is found"
 
 
 def preventiveCheckToken(onFailure=None):
@@ -62,38 +64,46 @@ def preventiveCheckToken(onFailure=None):
 
 @preventiveRequest(url="change_key", method="put")
 def refreshMasterKey(json=None) -> bool:
-    return json['status'] == "data_key_changed"
+    return json["status"] == "data_key_changed"
 
 
 @preventiveRequest(url="get_all", method="get")
 def getAll(json=None) -> int:
-    return int(json['password_count'])
+    return int(json["password_count"])
 
 
 @preventiveRequest(url="get_correct", method="post")
 def getById(id: int, json=None) -> PasswordQuery:
-    return PasswordQuery(domain=json["domain"], username=json['login'], password=json['password'])
+    return PasswordQuery(
+        domain=json["domain"], username=json["login"], password=json["password"]
+    )
 
 
 @preventiveRequest(url="add_data", method="post")
 def addQuery(domain: str, login: str, password: str, json=None) -> bool:
-    return json['status'] == "data_added"
+    return json["status"] == "data_added"
 
 
 @preventiveRequest(url="delete_data", method="post")
 def deleteQuery(domain: str, login: str = "", password: str = "", json=None) -> bool:
-    return json['status'] == "data_deleted"
+    return json["status"] == "data_deleted"
 
 
 @preventiveRequest(url="change_data", method="post")
 def changeQuery(domain: str, login: str, password: str, json=None) -> str:
-    return json['status']
+    return json["status"]
 
 
 @preventiveRequest(url="get_fuzzy", method="post")
-def fuzzySearch(domain: str, login: str = "", password: str = "", json=None) -> List[PasswordQuery]:
-    return [PasswordQuery(username=query['login'], password=query['password'], domain=query['domain']) for query in
-            json['data_list']]
+def fuzzySearch(
+    domain: str, login: str = "", password: str = "", json=None
+) -> List[PasswordQuery]:
+    return [
+        PasswordQuery(
+            username=query["login"], password=query["password"], domain=query["domain"]
+        )
+        for query in json["data_list"]
+    ]
 
 
 def checkAdminPassword(password: str, json=None) -> bool:
