@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-
+# ruff: noqa: N999
 # Form implementation generated from reading ui file '.\design\MainWindow.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
@@ -11,14 +10,12 @@ import logging
 import sys
 from pathlib import Path
 
-from PyQt5 import QtCore
-from PyQt5 import QtGui
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 from Logger import LoggerWriter
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow:
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("KeyApp")
         MainWindow.resize(1920, 1080)
@@ -342,28 +339,27 @@ class Ui_MainWindow(object):
         Logic implementation
         """
 
-        from PasswordQuery import Ui_passwordQueryWidget
-        from DeleteDialog import Ui_deletePasswordDialog
         from Alert import Ui_alertWidget
+        from DeleteDialog import Ui_deletePasswordDialog
+        from PasswordQuery import Ui_passwordQueryWidget
         from WebApi import (
             PasswordQuery,
-            refreshMasterKey,
-            getAll,
             addQuery,
-            deleteQuery,
             changeQuery,
-            fuzzySearch,
             checkAdminPassword,
             checkToken,
-            preventiveCheckToken,
+            deleteQuery,
+            fuzzySearch,
+            getAll,
             getById,
+            preventiveCheckToken,
+            refreshMasterKey,
         )
-        from typing import List
 
         self.deleteDialog = QtWidgets.QDialog()
         self.chosenPasswordWidget: QtWidgets.QWidget | None = None
         self.alertWidget = QtWidgets.QWidget()
-        self.passwordQueries: List[PasswordQuery] = []
+        self.passwordQueries: list[PasswordQuery] = []
         Ui_alertWidget().setupUi(self.alertWidget)
 
         def showMainWindowSetup():
@@ -578,10 +574,11 @@ class Ui_MainWindow(object):
             showButton = passwordQueryWidget.findChild(
                 QtWidgets.QPushButton, "showPasswordButton"
             )
+            passwordLineEdit = passwordQueryWidget.findChild(
+                QtWidgets.QLineEdit, "passwordLineEdit"
+            )
             showButton.clicked.connect(
-                lambda checked, lineEdit=passwordQueryWidget.findChild(QtWidgets.QLineEdit, "passwordLineEdit"): (
-                    changePasswordVisibility(lineEdit)
-                )
+                lambda checked: changePasswordVisibility(passwordLineEdit)
             )
 
             editButton = passwordQueryWidget.findChild(
@@ -608,7 +605,7 @@ class Ui_MainWindow(object):
             QtWidgets.QApplication.processEvents()
             self.scrollAreaWidgetContents.adjustSize()
 
-        def updatePasswordWidgetsList(queryList: List[PasswordQuery]):
+        def updatePasswordWidgetsList(queryList: list[PasswordQuery]):
             deletePasswordWidgetsList()
             self.responseLabel.setText("")
             self.scrollAreaWidgetContents.setMinimumHeight(240)

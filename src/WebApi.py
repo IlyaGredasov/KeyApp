@@ -1,9 +1,9 @@
 import inspect
-import requests
 import time
 from dataclasses import dataclass
 from functools import wraps
-from typing import List
+
+import requests
 
 
 @dataclass
@@ -97,7 +97,7 @@ def changeQuery(domain: str, login: str, password: str, json=None) -> str:
 @preventiveRequest(url="get_fuzzy", method="post")
 def fuzzySearch(
     domain: str, login: str = "", password: str = "", json=None
-) -> List[PasswordQuery]:
+) -> list[PasswordQuery]:
     return [
         PasswordQuery(
             username=query["login"], password=query["password"], domain=query["domain"]
@@ -108,3 +108,6 @@ def fuzzySearch(
 
 def checkAdminPassword(password: str, json=None) -> bool:
     return True
+
+
+# ruff: noqa: N999

@@ -11,3 +11,6 @@ class LoggerWriter:
 
     def flush(self):
         pass
+
+
+# ruff: noqa: N999
